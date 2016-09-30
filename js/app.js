@@ -10,6 +10,8 @@
   var activePlayer;
   var playCount = 0;
   var winner = false;
+  var player1name;
+  var player2name;
 
   // Teach computer how to play
   const winningCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -27,6 +29,17 @@
   };
 
   $('#start a').click(function(){
+    player1name = $("#player-1-name").val();
+    player2name = $("#player-2-name").val();
+
+    if(player1name){
+      $("#player1").html("<p style='color:black'>" + player1name + "</p>");
+    }
+
+    if(player2name){
+      $("#player2").html("<p style='color:black'>" + player2name + "</p>");
+    }
+
     // Hide start screen/win screen and show game borad
     $('#start').hide();
     $('.screen-win').hide();
@@ -54,9 +67,10 @@
     $(this).css("background-image", "");
   });
 
-  // Remove hover bind and keep players choice on board
   $(".box").click(function(){
+    // Do not allow change on player square if already taken
     if (!$(this).hasClass('box-filled-1') && !$(this).hasClass('box-filled-2')){
+      // Set chosen square to current players symbol
       if(activePlayer.attr("id") === "player1"){
         $(this).addClass("box-filled-1");
         gameState[$(this).index()] = 1;
@@ -68,12 +82,14 @@
       }
     }
 
+    // Adjust active player after click
     if(playCount % 2 !== 0){
       $("#player2, #player1").toggleClass("active");
     } else {
       $("#player1, #player2").toggleClass("active");
     }
 
+    // Determine winner and add appropriate win screen
     $(winningCombos).each(function(){
       if(gameState[$(this)[0]] != 0 && gameState[$(this)[0]] == gameState[$(this)[1]] && gameState[$(this)[1]] == gameState[$(this)[2]]){
         if(activePlayer.attr("id") === "player1"){
@@ -81,18 +97,23 @@
           $("#board").hide();
           $(".screen-win").addClass("screen-win-one");
           $(".screen-win").removeClass("screen-win-two screen-win-tie");
-          $(".message").text("Player 1 wins!");
+          if(player1){
+            $(".message").text(player1name + " wins!");
+          }
           $(".screen-win").show();
         } else {
           winner = true;
           $("#board").hide();
           $(".screen-win").addClass("screen-win-two");
           $(".screen-win").removeClass("screen-win-one screen-win-tie");
-          $(".message").text("Player 2 wins!");
+          if(player2){
+            $(".message").text(player2name + " wins!");
+          }
           $(".screen-win").show();
         }
       }
 
+      // Or a tie
       if(playCount == 9 && winner === false){
         $("#board").hide();
         $(".screen-win").removeClass("screen-win-one screen-win-two")
@@ -103,6 +124,7 @@
     });
   });
 
+  // Reset everything after a finished game
   $("#new-game").click(function(){
     $(".screen-win").hide();
     $("#board").show();
