@@ -1,8 +1,6 @@
 (function(){
-
   'use strict';
-
-  // Initially hide playing board
+  // Initially hide playing board and win screen
   $('#board').hide();
   $('.screen-win').hide();
 
@@ -32,11 +30,12 @@
     player1name = $("#player-1-name").val();
     player2name = $("#player-2-name").val();
 
+
+    // Check for player names and set them accordingly
     if(player1name){
       $("#player1").html("<p style='color:black'>" + player1name + "</p>");
     }
-
-    if(player2name){
+    if (player2name){
       $("#player2").html("<p style='color:black'>" + player2name + "</p>");
     }
 
@@ -46,8 +45,8 @@
     $('#board').show();
 
     // Set player1 to active
-    $("#player1").toggleClass('active');
-    getActivePlayer()
+    $("#player1").addClass('active');
+    getActivePlayer();
   });
 
   // On mouseenter, show X or O according to active player
@@ -69,7 +68,7 @@
 
   $(".box").click(function(){
     // Do not allow change on player square if already taken
-    if (!$(this).hasClass('box-filled-1') && !$(this).hasClass('box-filled-2')){
+    if(!$(this).hasClass('box-filled-1') && !$(this).hasClass('box-filled-2')){
       // Set chosen square to current players symbol
       if(activePlayer.attr("id") === "player1"){
         $(this).addClass("box-filled-1");
@@ -91,32 +90,38 @@
 
     // Determine winner and add appropriate win screen
     $(winningCombos).each(function(){
-      if(gameState[$(this)[0]] != 0 && gameState[$(this)[0]] == gameState[$(this)[1]] && gameState[$(this)[1]] == gameState[$(this)[2]]){
+      if(gameState[$(this)[0]] !== 0 && gameState[$(this)[0]] == gameState[$(this)[1]] && gameState[$(this)[1]] == gameState[$(this)[2]]){
         if(activePlayer.attr("id") === "player1"){
+          // If player1 wins
           winner = true;
           $("#board").hide();
           $(".screen-win").addClass("screen-win-one");
           $(".screen-win").removeClass("screen-win-two screen-win-tie");
-          if(player1){
+          if(player1name){
             $(".message").text(player1name + " wins!");
+          } else {
+            $(".message").text("Wins!");
           }
           $(".screen-win").show();
         } else {
+          // If player2 wins
           winner = true;
           $("#board").hide();
           $(".screen-win").addClass("screen-win-two");
           $(".screen-win").removeClass("screen-win-one screen-win-tie");
-          if(player2){
+          if(player2name){
             $(".message").text(player2name + " wins!");
+          } else {
+            $(".message").text("Wins!");
           }
           $(".screen-win").show();
         }
       }
 
       // Or a tie
-      if(playCount == 9 && winner === false){
+      if(playCount === 9 && winner === false){
         $("#board").hide();
-        $(".screen-win").removeClass("screen-win-one screen-win-two")
+        $(".screen-win").removeClass("screen-win-one screen-win-two");
         $(".screen-win").addClass("screen-win-tie");
         $(".message").text("It's a tie!");
         $(".screen-win").show();
@@ -132,14 +137,12 @@
     $(".box").removeClass("box-filled-1 box-filled-2");
     $(".box").css("background-image", "");
     $("#player1").addClass("active");
-    $("#player2").removeClass("active")
+    $("#player2").removeClass("active");
     getActivePlayer();
 
-    gameState = [0,0,0,0,0,0,0,0,0,];
+    gameState = [0,0,0,0,0,0,0,0,0];
     playCount = 0;
     winner = false;
   });
-
-
 // Do not venture past this point
 }());
